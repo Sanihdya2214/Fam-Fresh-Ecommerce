@@ -1,0 +1,48 @@
+version: '3'
+services:
+  front:
+    build:
+      context: './frontend'
+      dockerfile: Dockerfile
+    ports:
+      - 3000:3000
+    container_name: frontend-container
+    environment:
+      - WATCHPACK_POLLING=true
+    networks:
+      - mern-stack-network
+    volumes:
+      - ./frontend:/app
+    depends_on:
+      - backend
+  backend:
+    build:
+      context: './backend'
+      dockerfile: Dockerfile
+    ports:
+      - 8080:8080
+    container_name: backend-container
+    networks:
+      - mern-stack-network
+    volumes:
+      - ./backend:/app
+    depends_on:
+      - mongo
+  mongo:
+    image: mongo
+    ports:
+      - 27017:27017
+    container_name: mongo-container
+    networks:
+      - mern-stack-network
+    volumes:
+      - mongoData:/data/db
+    
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=./backend/.env
+      - MONGO_INITDB_ROOT_PASSWORD=./backend/.env
+      - MONGO_INITDB_DATABASE=FarmEcommerce
+networks:
+  mern-stack-network:
+volumes:
+  mongoData:
